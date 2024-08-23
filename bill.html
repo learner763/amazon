@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body,html{
+      margin: 0;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: black;
+     
+    }
+    .a{
+      display: flex;
+      flex-direction: column;
+      background-color: green;
+      color: white;
+      width: 350px;
+      
+    }
+    .a label,button,input{
+      margin: 10px;
+    }
+  </style>
+</head>
+<body>
+    <div class="a">
+      <i style="margin-top: 10px; color: black; justify-self: center;align-self: center;" class="fab fa-amazon"></i>
+      <label style="font-weight: bolder; margin-top: 25px; align-self: center; justify-self: first baseline;">AMAZON PAY</label>
+      <p></p>
+      <label style=" align-self: first baseline;">Full Name*</label>
+      <input class="ii" type="text">
+      <label style=" align-self: first baseline;">Contact*/Email*</label>
+      <input class="ii" type="text">
+      <label style=" align-self: first baseline;">Full Address*</label>
+      <input class="ii" type="text">
+      <label style=" align-self: first baseline;">Transaction ID*</label>
+      <input class="ii" type="text">
+      <button id="b1" style="border: none;cursor: pointer; background-color: orangered;color: white; justify-content: center;align-self: center; width: auto;">Pay</button>
+      <label id="m2" style="align-self: center;">Your final bill is </label>
+    </div>
+    <script>
+      document.addEventListener("DOMContentLoaded",function()
+    {
+        let inputs=document.getElementsByClassName("ii")
+        let b1=document.getElementById("b1")
+        let m2=document.getElementById("m2")
+        let price=JSON.parse(localStorage.getItem("payment"))
+
+        price=parseInt(price)
+        m2.textContent+=price+" USD"+"."
+        b1.addEventListener("click",function()
+        {
+        let miss=0
+        for(let i=0;i<inputs.length;i++)
+        {
+            if(inputs[i].value.length==0)
+            {
+                miss+=1
+            }
+        }
+        if(miss==0)
+        {
+          let products=JSON.parse(localStorage.getItem("added"))
+          let items_bought=""
+          for(let i=0;i<products.length;i++)
+          {
+            items_bought+=String(products[i])+"-"
+          }
+          let Email=JSON.parse(localStorage.getItem("Email"))
+          let Password=JSON.parse(localStorage.getItem("Password"))
+          let overall_data=Password+"-"+Email+"-"+items_bought
+          fetch('/bill', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+        },
+        
+        body: JSON.stringify({ overall_data }),
+      
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          window.location.href = '/Products'; 
+        } else {
+          alert('Login failed');
+        }
+      })
+      .catch(error => console.error('Error:', error));
+            localStorage.removeItem("added")
+            window.location.href='/Products'
+        }
+        
+    })})
+    </script>
+</body> 
+</html>
